@@ -17,6 +17,11 @@ class Test {
         // Passing the object to thread in main()
         Thread myThread = new Thread(obj);   
         myThread.start();
+        try {
+        	myThread.join();
+        } catch (InterruptedException e1) {
+        	e1.printStackTrace();
+        }
         sc.close();    
     }
 }
