@@ -14,32 +14,58 @@ public class Shell extends Thread {
         PATH = path;
     }
 
-    String UserInput(){
-        //Scanner sc = new Scanner(System.in);
-        String command = sc.nextLine();
-        sc.close();
-        return command;
-    }
-
     public void run() {
         while(true) {
             System.out.print(User+"@"+Host+"$ ");
-            //"exit" command
-            if (UserInput() == "exit") 
-                break;
-            //"echo" command
-            if(UserInput()== "echo") {
+            String input = sc.nextLine();
+            
+            String command = "";
+            for(int i = 0 ; i < 4 ;i++) {
+                char c = input.charAt(i);
+                command = command + c;
+            }
+
+            switch (command) {
+                case "echo":  
                 String message = "";
-                for(int i = 0 ; i < UserInput().length() ;i++) {
-                    char c = UserInput().charAt(i); 
-                    if(c == '"') 
-                        for(int j = i ; j < UserInput().length() ;j++) 
-                            if(c != '"')
+                for(int i = 0 ; i < input.length() ;i++) {
+                    char c = input.charAt(i); 
+                    if(c == '"') {
+                        for(int j = i ; j < input.length() ;j++) { 
+                            if(c != '"') {
                                 message = message + c;
+                            }
+                        }
+                    }
                 }
-                System.out.print(message);
-            }   
-        }
-        System.out.println("exiting shell thread");   
+                System.out.print(message);        
+                    continue;
+                    
+                case "exit":  command = "exit";
+                         break;
+
+                default: command = "Invalid command";
+                         continue;
+            }       
+            //"echo" command
+            // if(command== "echo") {
+            //     String message = "";
+            //     for(int i = 0 ; i < input.length() ;i++) {
+            //         char c = input.charAt(i); 
+            //         if(c == '"') {
+            //             for(int j = i ; j < input.length() ;j++) { 
+            //                 if(c != '"') {
+            //                     message = message + c;
+            //                 }
+            //             }
+            //         }
+            //     }
+            //     System.out.print(message);
+            // }
+            // //"exit" command
+            // if (command == "exit"){
+            //     return;
+            // }   
+        }  
     }
 }
