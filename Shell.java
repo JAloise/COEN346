@@ -27,7 +27,7 @@ public class Shell extends Thread {
 
             switch (command) {
                 case "echo":  
-                String message = "";
+                /*String message = "";
                 for(int i = 0 ; i < input.length() ;i++) {
                     char c = input.charAt(i); 
                     if(c == '"') {
@@ -39,7 +39,18 @@ public class Shell extends Thread {
                     }
                 }
                 System.out.print(message);        
-                    continue;
+                    continue; */
+                	
+                //String message = "";
+                String toAdd = input;
+                //message += toAdd;
+                String toDisplay = "";
+                for(int i = 6 ; i < toAdd.length()-1 ; i++) {
+                	char c = toAdd.charAt(i);
+                	toDisplay += c;
+                }
+                System.out.println(toDisplay);
+                continue;
                     
                 case "exit":  command = "exit";
                          break;
@@ -47,25 +58,6 @@ public class Shell extends Thread {
                 default: command = "Invalid command";
                          continue;
             }       
-            //"echo" command
-            // if(command== "echo") {
-            //     String message = "";
-            //     for(int i = 0 ; i < input.length() ;i++) {
-            //         char c = input.charAt(i); 
-            //         if(c == '"') {
-            //             for(int j = i ; j < input.length() ;j++) { 
-            //                 if(c != '"') {
-            //                     message = message + c;
-            //                 }
-            //             }
-            //         }
-            //     }
-            //     System.out.print(message);
-            // }
-            // //"exit" command
-            // if (command == "exit"){
-            //     return;
-            // }   
-        }  
-    }
+            }  
+        }
 }
