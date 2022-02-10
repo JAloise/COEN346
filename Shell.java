@@ -10,15 +10,17 @@ public class Shell extends Thread {
 
     public static Scanner sc = new Scanner(System.in);
 
+    
     public Shell(String user, String host, String path) {
         User = user;
         Host = host;
         PATH = path;
     }
 
-    public static String echo1(String input) {
+    
+    public static String echo1(String input) {		// used for simple echo command
 	    String toReturn = "";
-	    for(int i = 6 ; i < input.length()-1 ; i++)
+	    for(int i = 6 ; i < input.length()-1 ; i++)		// save everything between the quotations in a new string
 	    {
 	        char c = input.charAt(i);
 	        toReturn += c;
@@ -26,72 +28,90 @@ public class Shell extends Thread {
 	    return toReturn;
 	}
 	
-	public static String echo2(String input, int index) {
+    
+   // FUNCTIONS USED FOR "->"
+	public static String echo2(String input, int index) {		// echo variation used for single arrow command
 	    String toReturn = "";
-	    for(int i = 6 ; i < index-3 ; i++) {
+	    for(int i = 6 ; i < index-3 ; i++) {		// save everything between the quotations in a new string
 	        char a = input.charAt(i);
 	        toReturn += a;
 	    }
 	    return toReturn;
 	}
 	
-	public static String echo3(String input, int index) {
-	    String toReturn = "";
-	    for(int i = 6 ; i < index-4 ; i++) {
-	        char a = input.charAt(i);
-	        toReturn += a;
-	    }
-	    return toReturn;
-	}
-	
-	public static void SingleArrow(String echoOutput, String fileName) throws IOException {
+	public static void SingleArrow(String echoOutput, String fileName) throws IOException {		// writing to file
 	    FileWriter WriteToFile = new FileWriter(fileName);
 	    WriteToFile.write(echoOutput);
 	    WriteToFile.flush();
 	    WriteToFile.close();
 	}
 	
-	public static void DoubleArrow(String echoOutput, String fileName) throws IOException {
+	
+	// FUNCTIONS USED FOR "->>"
+	public static String echo3(String input, int index) {		// echo variation used for double arrow command
+	    String toReturn = "";
+	    for(int i = 6 ; i < index-4 ; i++) {		// save everything between the quotations in a new string
+	        char a = input.charAt(i);
+	        toReturn += a;
+	    }
+	    return toReturn;
+	}
+	
+	public static void DoubleArrow(String echoOutput, String fileName) throws IOException {		// appending to file
 	    FileWriter toAppend = new FileWriter(fileName, true);
 	    toAppend.write(echoOutput);
 	    toAppend.flush();
 	    toAppend.close();
 	}
-
+	
+	
+	
+	// FUNCTION TO KNOW WHICH COMMAND TO RUN OUT OF "echo", "->", and "->>"
     public void EchoCommand(String input) throws IOException{
 
-        if(input.contains("echo") && !input.contains(" ->") && !input.contains(" ->>")) {
-		    String toBeDisplayed = echo1(input);
+        if(input.contains("echo") && !input.contains(" ->") && !input.contains(" ->>")) {		// if simple "echo"
+		    
+        	String toBeDisplayed = echo1(input);
 		    System.out.println(toBeDisplayed);
 		}
 		
-		else if (input.contains("echo") && input.contains(" ->") && !input.contains(" ->>") ){ 
-		    int index = input.indexOf(">");
+        
+		else if (input.contains("echo") && input.contains(" ->") && !input.contains(" ->>") ){ 		// if "->"
+		    
+			int index = input.indexOf(">");				// find the index of the arrow and save the text file name in a new string
 		    String filestring = "";
 		    for(int i = index+2 ; i < input.length() ; i++) {
 		        char a = input.charAt(i);
 		        filestring += a;
 		    }
+		   
 		    String toBeDisplayed = echo2(input, index);
 		    SingleArrow(toBeDisplayed, filestring);
 		}
 		
-		else if(input.contains("echo") && !input.contains("-> ") && input.contains(" ->>")) {
-		    int index = input.lastIndexOf(">");
+		else if(input.contains("echo") && !input.contains("-> ") && input.contains(" ->>")) {		// if "->>"
+		    
+			int index = input.lastIndexOf(">");			// find the index of the 2nd arrow and save the text file name in a new string
 		    String filestring = "";
 		    for(int i = index+2 ; i < input.length() ; i++) {
 		        char a = input.charAt(i);
 		        filestring += a;
 		    }
+		    
 		    String toBeDisplayed = echo3(input, index);
 		    DoubleArrow(toBeDisplayed, filestring);
 		}
     }
 
+    
+    
     public void run() {
-        boolean condition = true;
-        while(condition) {
-            System.out.print(User+"@"+Host+"$ ");
+        
+    	boolean condition = true;			// used to continuously run the CLI
+        
+    	while(condition) {					// while condition is true, keep looping
+           
+    		System.out.print(User+"@"+Host+"$ ");
             String input = sc.nextLine();
             
             String command = "";
@@ -104,15 +124,15 @@ public class Shell extends Thread {
                 
             	case "echo":  
                     try {
-                        EchoCommand(input);
-                    } catch (IOException e) {
+                        EchoCommand(input);			// if the command is "echo", run the function to find out which version of "echo" to run
+                    } catch (IOException e) {													// (simple, single-arrow, double-arrow)
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
             		continue;
                     
                 case "exit":     
-                    condition = false;
+                    condition = false;				// if the command in "exit", set condition to false, it breaks the loop and exits the CLI
                         break;
 
                 default: 
