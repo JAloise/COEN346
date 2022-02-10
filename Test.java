@@ -1,26 +1,34 @@
 import java.util.*;
+import java.io.*;
 import java.lang.Thread;
 
 class Test {
     public static Scanner sc = new Scanner(System.in);
-    public static void main(String[] args) 
+    public static void main(String[] args) throws IOException 
     {
-        //get inputs
-        System.out.println("Enter input: username, hostname & PATH folders");
+        FileReader fr = new FileReader("inputs.txt");
+        BufferedReader br = new BufferedReader(fr);
+        String str;
+        List<String> fileText = new ArrayList<String>();
+        while ((str = br.readLine()) != null) {
+            fileText.add(str);
+        }
+        br.close();
 
-        String Username = sc.nextLine();
-        String Hostname = sc.nextLine();
-        String path = sc.nextLine();
-        
+        String Username = fileText.get(0);
+        String Hostname = fileText.get(1);
+        String path = fileText.get(2);
+
         //System.out.println("main thread")
         Shell obj = new Shell(Username,Hostname,path);
         // Passing the object to thread in main()
-        Thread myThread = new Thread(obj);   
-        myThread.start();
+        Thread myThread = new Thread(obj);
+        myThread.start();   
         try {
-        	myThread.join();
+            myThread.join();
         } catch (InterruptedException e1) {
-        	e1.printStackTrace();
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
         }
         sc.close();    
     }
