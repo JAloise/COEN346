@@ -21,7 +21,7 @@ public class Shell extends Thread {		//Shell extends thread because this class w
 
     public static String echo1(String input) {		// used for simple echo command
 	    String toReturn = "";
-	    for(int i = 6 ; i < input.length()-1 ; i++)		// save everything between the quotations in a new string
+	    for(int i = 6 ; i < input.length()-1 ; i++)		// save everything between the quotations in a new string (what the user wants to display)
 	    {
 	        char c = input.charAt(i);
 	        toReturn += c;
@@ -33,14 +33,14 @@ public class Shell extends Thread {		//Shell extends thread because this class w
    // FUNCTIONS USED FOR "->"
 	public static String echo2(String input, int index) {		// echo variation used for single arrow command
 	    String toReturn = "";
-	    for(int i = 6 ; i < index-3 ; i++) {		// save everything between the quotations in a new string
+	    for(int i = 6 ; i < index-3 ; i++) {		// save everything between the quotations in a new string (what the user wants to write to the file)
 	        char a = input.charAt(i);
 	        toReturn += a;
 	    }
 	    return toReturn;
 	}
 	
-	public static void SingleArrow(String echoOutput, String fileName) throws IOException {		// writing to file
+	public static void SingleArrow(String echoOutput, String fileName) throws IOException {		// writing the user input to file
 	    FileWriter WriteToFile = new FileWriter(fileName);
 	    WriteToFile.write(echoOutput);
 	    WriteToFile.flush();
@@ -51,7 +51,7 @@ public class Shell extends Thread {		//Shell extends thread because this class w
 	// FUNCTIONS USED FOR "->>"
 	public static String echo3(String input, int index) {		// echo variation used for double arrow command
 	    String toReturn = "";
-	    for(int i = 6 ; i < index-4 ; i++) {		// save everything between the quotations in a new string
+	    for(int i = 6 ; i < index-4 ; i++) {		// save everything between the quotations in a new string (what the user wants to append to the file)
 	        char a = input.charAt(i);
 	        toReturn += a;
 	    }
@@ -72,8 +72,8 @@ public class Shell extends Thread {		//Shell extends thread because this class w
 
         if(input.contains("echo") && !input.contains(" ->") && !input.contains(" ->>")) {		// if simple "echo"
 		    
-        	String toBeDisplayed = echo1(input);
-		    System.out.println(toBeDisplayed);
+        	String toBeDisplayed = echo1(input);		// save the user input String into a variable
+		    System.out.println(toBeDisplayed);			// display the input
 		}
 		
         
@@ -86,8 +86,8 @@ public class Shell extends Thread {		//Shell extends thread because this class w
 		        filestring += a;
 		    }
 		   
-		    String toBeDisplayed = echo2(input, index);
-		    SingleArrow(toBeDisplayed, filestring);
+		    String toBeDisplayed = echo2(input, index);		// save the user input String into a variable
+		    SingleArrow(toBeDisplayed, filestring);			// write that string into a file determined by the user input
 		}
 		
 		else if(input.contains("echo") && !input.contains("-> ") && input.contains(" ->>")) {		// if "->>"
@@ -99,8 +99,8 @@ public class Shell extends Thread {		//Shell extends thread because this class w
 		        filestring += a;
 		    }
 		    
-		    String toBeDisplayed = echo3(input, index);
-		    DoubleArrow(toBeDisplayed, filestring);
+		    String toBeDisplayed = echo3(input, index);		// save the user input String into a variable
+		    DoubleArrow(toBeDisplayed, filestring);			// append that string into the file determined by the user input
 		}
     }
 
@@ -135,8 +135,12 @@ public class Shell extends Thread {		//Shell extends thread because this class w
                     condition = false;	// if the command in "exit", set condition to false, it breaks the loop and exits the CLI
                         break;      
 
+                        
+                
+                	
                 default: 	// if the input is none of the internal commands, default case will invoke external/included command
-                    Execute obj = new Execute(input, PATH);   //created Object of class execute to invoke external/included command
+                    
+                	Execute obj = new Execute(input, PATH);   //created Object of class execute to invoke external/included command
                     Thread myThread = new Thread(obj);  // start new thread using newly created object
                     myThread.start(); 	//start thread execution
                     if (input.charAt(input.length()-2) != '&') //checking if last char of input is & or not; 
@@ -149,8 +153,11 @@ public class Shell extends Thread {		//Shell extends thread because this class w
                             e1.printStackTrace();
                         }
                     }  
-                    continue; 	// go back to checking loop condition
-            }     
+                    continue; // go back to checking loop condition
+                    
+                    
+                    
+             }     
         }  
     }
 }
