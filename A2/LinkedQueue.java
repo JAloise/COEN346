@@ -26,7 +26,7 @@ public class Queue<Process> {
 		numofelements++;
 	}
 	
-	public Item dequeue() {
+	public Process dequeue() {
 		Process process = first.process;
 		first = first.next;
 		numofelements--;
