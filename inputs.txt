@@ -1,3 +1,0 @@
-coen
-user
-dir/bin,dir/local,dir/usr
