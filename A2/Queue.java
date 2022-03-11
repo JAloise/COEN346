@@ -1,4 +1,4 @@
-public class Queue<Process> {
+public class Queue<T> {
 
 	private Node first, last;
 	int numofelements;
@@ -34,4 +34,15 @@ public class Queue<Process> {
 			last = null;
 		return process;
 	}
+
+	public String Display() {
+        String output = "";
+        Node current = first;
+        while(current != null) {
+            output += current.process.getPID() + " ";
+            current = current.next;
+        }
+        return output;
+    }
+	 
 }

@@ -1,33 +1,24 @@
-
-public class Process {
-
+public class Process extends Thread {
 	// Attributes
-	private int PID;
+	private String PID;
 	private int arrival_time;
 	private int burst_time;
 	private int priority;
-	private String state;		// can use boolean but we have more than 2 states
+	private String state = "Arrived";		// can use boolean but we have more than 2 states
 	
-	// Constructors
-	public Process() {
-		
-	}
-	
-	public Process(int p, int a, int b, int p, String s) {
-		this.PID = p;
+	public Process(String id, int a, int b, int p) {
+		this.PID = id;
 		this.arrival_time = a;
 		this.burst_time = b;
 		this.priority = p;
-		this.state = s;
 	}
 	
-
 	// Setters and Getters
-	public int getPID() {
+	public String getPID() {
 		return PID;
 	}
 
-	public void setPID(int pID) {
+	public void setPID(String pID) {
 		PID = pID;
 	}
 
@@ -47,20 +38,21 @@ public class Process {
 		this.burst_time = burst_time;
 	}
 
-	public int getPriority() {
+	public int GetPriority() {
 		return priority;
 	}
 
-	public void setPriority(int priority) {
+	public void SetPriority(int priority) {
 		this.priority = priority;
 	}
 
-	public String getState() {
+	public String GetState() {
 		return state;
 	}
 
 	public void setState(String state) {
 		this.state = state;
 	}
-	
+    
+    public void run() {}
 }
