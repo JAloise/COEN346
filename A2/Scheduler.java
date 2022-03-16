@@ -1,11 +1,11 @@
-import java.util.concurrent.Semaphore;
+
 public class Scheduler extends Thread{
     
-    Semaphore s;
+
     Process[] processes;
     Clock clk;
-    static Queue<Process> expired = new Queue<Process>();
-    static Queue<Process> active = new Queue<Process>();
+    Queue<Process> expired = new Queue<Process>();
+    Queue<Process> active = new Queue<Process>();
     Process temp;
     int TimeSlot[] = new int[processes.length];
 
@@ -28,9 +28,8 @@ public class Scheduler extends Thread{
     {
         while(true){
             try {
-                s.acquire();
+                Thread.sleep(10);
                 clk.getValue();
-                s.release();
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -58,14 +57,20 @@ public class Scheduler extends Thread{
         this.clk = clk;
         expired.setFlag(false);
         active.setFlag(true);
+        FillEnqueue fill = new FillEnqueue(processes,clk,expired);
+        Thread fillThread = new Thread(fill);  
+        fillThread.start();
     }
 
-    public void run() { 
+    public void run() {
 
-        for(int i = 0; i < processes.length; i++) {
-            if(processes[i].getArrival_time() == CheckClock())
-                expired.enqueue(processes[i]);
-        }
+        Process dequeued = expired.dequeue();
+        active.enqueue(dequeued);
+        Process process = active.dequeue();
+        Thread P = new Thread(process);  
+        P.start();
+        process.setState("started");
+        //....
         
         if(active.isEmpty())
         {

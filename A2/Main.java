@@ -3,6 +3,8 @@ import java.util.*;
 
 public class Main {
 
+    Clock clock = new Clock();
+
     static int size() {
         int size = 0;
         File file = new File("input.txt");
@@ -16,6 +18,8 @@ public class Main {
         return size;
     }
     public static void main(String[] args) throws Exception {
+
+        Clock clock = new Clock();
 
         File file = new File("input.txt");
         int size = size();
@@ -41,7 +45,7 @@ public class Main {
         Process processes[] = new Process[size];
         //create process objects and place them in array of processes
         for(int i = 0 ; i < processes.length; i++) {
-            Process Process = new Process(IDs[i], Arrivals[i], Bursts[i], Priorities[i]);
+            Process Process = new Process(IDs[i], Arrivals[i], Bursts[i], Priorities[i],clock);
             processes[i] = Process;
         }
 
@@ -58,16 +62,27 @@ public class Main {
 		    }
 		}
 
-        Clock clock = new Clock();
         Thread clockThread = new Thread(clock);  
         clockThread.start();
         
         Scheduler scheduler = new Scheduler(processes, clock); 
         Thread SchedulerThread = new Thread(scheduler);
 
-
-        if(clock.getValue() == 1){
-            SchedulerThread.start();
-        }  
+        boolean bool = true;
+        while (bool)
+        {
+            int time = 0;
+            try {
+                Thread.sleep(10);
+                time = clock.getValue();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            if(time == 1000){
+                SchedulerThread.start();
+                bool = false;
+            }
+        }
     }
 }

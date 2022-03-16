@@ -7,20 +7,22 @@ public class Process extends Thread {
 	private String state = "Arrived";		// can use boolean but we have more than 2 states
 	private int count = 0;
 	private int exec_time = 0;
+	private Clock clk;
 	
-	public Process(String id, int a, int b, int p) {
+	public Process(String id, int a, int b, int p, Clock clk) {
 		this.PID = id;
 		this.arrival_time = a;
 		this.burst_time = b;
 		this.priority = p;
+		this.clk = clk;
 	}
 	
-	public int getExec_time() {
-		return exec_time;
+	public int getClk() {
+		return clk.getValue();
 	}
 
-	public void setExec_time(int exec_time) {
-		this.exec_time = exec_time;
+	public int getExec_time() {
+		return exec_time;
 	}
 
 	// Setters and Getters
@@ -28,32 +30,17 @@ public class Process extends Thread {
 		return PID;
 	}
 
-	public void setPID(String pID) {
-		PID = pID;
-	}
-
 	public int getArrival_time() {
 		return arrival_time;
 	}
 
-	public void setArrival_time(int arrival_time) {
-		this.arrival_time = arrival_time;
-	}
 
 	public int getBurst_time() {
 		return burst_time;
 	}
 
-	public void setBurst_time(int burst_time) {
-		this.burst_time = burst_time;
-	}
-
 	public int GetPriority() {
 		return priority;
-	}
-
-	public void SetPriority(int priority) {
-		this.priority = priority;
 	}
 
 	public String GetState() {
@@ -70,7 +57,16 @@ public class Process extends Thread {
 	}
     
     public void run() {
-		setState("started");
 		
+		while(true)
+		{
+			try {
+				Thread.sleep(10);
+				getClk();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }
