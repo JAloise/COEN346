@@ -13,7 +13,7 @@ public class Clock extends Thread{
     public void run() {
         while (true){
             try {
-                Thread.sleep(1000);
+                Thread.sleep(20);
                 value += 1 ;
             } catch (InterruptedException e) {
                 e.getStackTrace();

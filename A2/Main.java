@@ -2,18 +2,29 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        
-        Queue<Process> expired = new Queue<Process>();
-        Queue<Process> active = new Queue<Process>();        
+
+    static int size() {
+        int size = 0;
         File file = new File("input.txt");
+        try{
+            Scanner sc = new Scanner(file);
+            size = sc.nextInt();
+            sc.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return size;
+    }
+    public static void main(String[] args) throws Exception {
+
+        File file = new File("input.txt");
+        int size = size();
+        String IDs[] = new String[size];
+        int Arrivals[] = new int[size];
+        int Bursts[] = new int[size];
+        int Priorities[] = new int[size];
         try {
             Scanner sc = new Scanner(file);
-            int size = sc.nextInt();
-            String IDs[] = new String[size];
-            int Arrivals[] = new int[size];
-            int Bursts[] = new int[size];
-            int Priorities[] = new int[size];
             int j = 0;
             while (sc.hasNextLine() && j < (size+1)) {
                 IDs[j] = sc.next();
@@ -23,38 +34,39 @@ public class Main {
                 j++;
             }
             sc.close();
-            Process processes[] = new Process[size];
-            //create process objects and place them in array of processes
-            for(int i = 0 ; i < size; i++) {
-                Process Process = new Process(IDs[i], Arrivals[i], Bursts[i], Priorities[i]);
-                processes[i] = Process;
-            }
-
-		    Process temp;
-		
-            //sort array of processs based on process priorities
-		    for(int i = 0 ; i < processes.length ; i++) {
-		        for (int k = i+1 ; k < processes.length ; k++) {
-		            if (processes[i].GetPriority() > processes[k].GetPriority()) {
-		                temp = processes[i];
-		                processes[i] = processes[k];
-		                processes[k] = temp;
-		            }
-		        }
-		    }
-
-            //enqueu sorted processes in array 
-            for(int i = 0 ; i < size; i++) {
-                expired.enqueue(processes[i]);
-            }
-            
-            //Display sorted array elements' process IDs
-		    System.out.println("\n" + "SORTED");
-            String display = expired.Display();
-            System.out.println(display);
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+        Process processes[] = new Process[size];
+        //create process objects and place them in array of processes
+        for(int i = 0 ; i < processes.length; i++) {
+            Process Process = new Process(IDs[i], Arrivals[i], Bursts[i], Priorities[i]);
+            processes[i] = Process;
+        }
+
+		Process temp;
+		
+        //sort array of processs based on process priorities
+		for(int i = 0 ; i < processes.length ; i++) {
+		    for (int k = i+1 ; k < processes.length ; k++) {
+		        if (processes[i].GetPriority() > processes[k].GetPriority()) {
+		            temp = processes[i];
+		            processes[i] = processes[k];
+		            processes[k] = temp;
+		        }
+		    }
+		}
+
+        Scheduler scheduler = new Scheduler(processes);
+        Thread SchedulerThread = new Thread(scheduler);
+
+        Clock clock = new Clock();
+        Thread clockThread = new Thread(clock);
+
+        clockThread.start();
+        if(clock.getValue() == 1){
+            SchedulerThread.start();
+        }  
     }
 }

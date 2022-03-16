@@ -1,5 +1,7 @@
 public class Queue<T> {
 
+	private boolean flag;
+
 	private Node first, last;
 	int numofelements;
 	
@@ -12,6 +14,14 @@ public class Queue<T> {
 		return first == null;
 	}
 	
+	public boolean getFlag() {
+		return flag;
+	}
+
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+
 	public void enqueue(Process process) {
 		Node oldlast = last;
 		last = new Node();
