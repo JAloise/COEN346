@@ -7,7 +7,7 @@ public class FillEnqueue extends Thread{
     Queue<Process> expired = new Queue<Process>();
     int index;
 
-    FillEnqueue(Process[] processes, Clock clk, Queue<Process> expired)
+    FillEnqueue(Process[] processes, Clock clk, Queue<Process> expired, int index)
     {
         this.processes = processes;
         this.clk = clk;
@@ -26,8 +26,9 @@ public class FillEnqueue extends Thread{
                     {
                         s.acquire();
                         expired.enqueue(processes[i]);
-                        s.release();
+                        processes[i].setState("Arrived");
                         index = i;
+                        s.release();
                     }
                 }
 			} catch (InterruptedException e) {

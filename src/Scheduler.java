@@ -1,7 +1,6 @@
 
 public class Scheduler extends Thread{
     
-
     Process[] processes;
     Clock clk;
     Queue<Process> Q1 = new Queue<Process>();
@@ -9,14 +8,15 @@ public class Scheduler extends Thread{
     Process temp;
     int TimeSlot[] = new int[processes.length];
     FillEnqueue fill;
+    int index = 0;
 
     Scheduler(Process[] processes, Clock clk)
     {
         this.processes = processes;
         this.clk = clk;
-        Q1.setFlag(false);
-        Q2.setFlag(true);
-        fill = new FillEnqueue(processes,clk,Q2);
+        Q1.setFlag(false); // flag set to false for expired queue
+        Q2.setFlag(true);  // flag set to true for active
+        fill = new FillEnqueue(processes,clk,Q1,index); //fill expired queue with arriving processes
         Thread fillThread = new Thread(fill);  
         fillThread.start();
     }
@@ -52,14 +52,26 @@ public class Scheduler extends Thread{
 
     public void run() {
         
-        if(Q2.isEmpty())
+        if(Q2.isEmpty()) //if queue initially set as active is empty,
         {
+            //swap flags
             boolean temp;
-            temp = Q2.getFlag();
+            temp = Q2.getFlag();       
             Q2.setFlag(Q1.getFlag());
             Q1.setFlag(temp);
+            //Q1 is now the active queue and Q2 is the expired queue
         } else {
-            
+            if(Q2.getFlag()==true)
+            {
+                Process running;
+                running = Q2.dequeue();
+                Thread RunThread = new Thread(running);  
+                RunThread.start();
+                processes[index].setState("Started");
+            } else {
+
+            }
+
         }
 
         

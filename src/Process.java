@@ -1,22 +1,19 @@
 public class Process extends Thread {
 	// Attributes
 	private String PID;
-	private int arrival_time;
-	private int burst_time;
-	private int priority;
-	private String state = "Arrived";		// can use boolean but we have more than 2 states
-	private int count = 0;
-	private int exec_time; //start time - timeslot
+	private int arrival_time, burst_time, priority, timeSlot;
+	private String state = "";		// can use boolean but we have more than 2 states
+	private int Start_time,count = 0; //exec time = start time - timeslot
+	private int exec_time = Start_time - timeSlot;
 	private Clock clk;
-	private int timeSlot;
-	
+
 	public Process(String id, int a, int b, int p, Clock clk,int timeSlot) {
 		this.PID = id;
 		this.arrival_time = a;
 		this.burst_time = b;
 		this.priority = p;
-		this.clk = clk;
 		this.timeSlot = timeSlot;
+		this.clk = clk;
 	}
 
 	public Process(String id, int a, int b, int p, Clock clk) {
@@ -27,6 +24,14 @@ public class Process extends Thread {
 		this.clk = clk;
 	}
 	
+	public int GetStart_time(){
+		return Start_time;
+	}
+
+	public void SetStart_time(int start){
+		Start_time = start;
+	}
+
 	public int getClk() {
 		return clk.getValue();
 	}
@@ -67,20 +72,15 @@ public class Process extends Thread {
 	public void setState(String state) {
 		this.state = state;
 	}
-
-	public void IncrementCount()
-	{
-		count++;
-	}
     
     public void run() {
-		
+		count++;
 		while(true)
 		{
+			SetStart_time(getClk());
 			try {
 				Thread.sleep(10);
 				if(getClk() == timeSlot){
-
 					UpdateBurst_time(exec_time);
 				}
 			} catch (InterruptedException e) {
