@@ -4,11 +4,23 @@ public class Scheduler extends Thread{
 
     Process[] processes;
     Clock clk;
-    Queue<Process> expired = new Queue<Process>();
-    Queue<Process> active = new Queue<Process>();
+    Queue<Process> Q1 = new Queue<Process>();
+    Queue<Process> Q2 = new Queue<Process>();
     Process temp;
     int TimeSlot[] = new int[processes.length];
+    FillEnqueue fill;
 
+    Scheduler(Process[] processes, Clock clk)
+    {
+        this.processes = processes;
+        this.clk = clk;
+        Q1.setFlag(false);
+        Q2.setFlag(true);
+        fill = new FillEnqueue(processes,clk,Q2);
+        Thread fillThread = new Thread(fill);  
+        fillThread.start();
+    }
+    
     //sort array of processs based on process priorities
     void SortProcessesArray() {
         
@@ -24,19 +36,6 @@ public class Scheduler extends Thread{
 		}
     }
 
-    int CheckClock()
-    {
-        while(true){
-            try {
-                Thread.sleep(10);
-                clk.getValue();
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    }
-
     void TimeSlot() {
         for(int i = 0 ; i<processes.length; i++) {
             int timeSlot = 0;
@@ -49,36 +48,24 @@ public class Scheduler extends Thread{
             }
             TimeSlot[i] = timeSlot;
         }
-    }
-
-    Scheduler(Process[] processes, Clock clk)
-    {
-        this.processes = processes;
-        this.clk = clk;
-        expired.setFlag(false);
-        active.setFlag(true);
-        FillEnqueue fill = new FillEnqueue(processes,clk,expired);
-        Thread fillThread = new Thread(fill);  
-        fillThread.start();
-    }
+    }  
 
     public void run() {
-
-        Process dequeued = expired.dequeue();
-        active.enqueue(dequeued);
-        Process process = active.dequeue();
-        Thread P = new Thread(process);  
-        P.start();
-        process.setState("started");
-        //....
         
-        if(active.isEmpty())
+        if(Q2.isEmpty())
         {
             boolean temp;
-            temp = active.getFlag();
-            active.setFlag(expired.getFlag());
-            expired.setFlag(temp);
+            temp = Q2.getFlag();
+            Q2.setFlag(Q1.getFlag());
+            Q1.setFlag(temp);
+        } else {
+            
         }
+
+        
+        //....
+        
+        
  
         //Updating Process priority
         //waiting_time = sum_of_waiting_times

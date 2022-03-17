@@ -45,7 +45,7 @@ public class Main {
         Process processes[] = new Process[size];
         //create process objects and place them in array of processes
         for(int i = 0 ; i < processes.length; i++) {
-            Process Process = new Process(IDs[i], Arrivals[i], Bursts[i], Priorities[i],clock);
+            Process Process = new Process(IDs[i], Arrivals[i], Bursts[i], Priorities[i], clock);
             processes[i] = Process;
         }
 
