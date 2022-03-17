@@ -84,5 +84,8 @@ public class Main {
                 bool = false;
             }
         }
+
+        PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
+        System.setOut(out);
     }
 }
