@@ -69,7 +69,11 @@ public class Scheduler extends Thread{
                 RunThread.start();
                 processes[index].setState("Started");
             } else {
-
+                Process running;
+                running = Q1.dequeue();
+                Thread RunThread = new Thread(running);  
+                RunThread.start();
+                processes[index].setState("Started");
             }
 
         }
