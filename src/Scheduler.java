@@ -1,3 +1,4 @@
+import java.lang.Math;
 
 public class Scheduler extends Thread{
     
@@ -21,7 +22,7 @@ public class Scheduler extends Thread{
         fillThread.start();
     }
     
-    //sort array of processs based on process priorities
+    //sort array of processes based on process priorities
     void SortProcessesArray() {
         
 		Process temp;
@@ -39,9 +40,35 @@ public class Scheduler extends Thread{
     void UpdatePriority() {
 
         //Updating Process priority
+    	for(int i = 0 ; i < processes.length ; i++) {
         //waiting_time = sum_of_waiting_times
-        //bonus = [10*waiting_time/(now – arrival_time)]. With [x] = floor(x)
-        //New_priority = max(100,min(old_priority - bonus+5,139))
+    	// (start_time - arrival_time) + (resume_time - (start_time + exec_time) 
+    	int waiting = ( processes[i].GetStart_time() - processes[i].getArrival_time() ) + 
+    				  ( processes[i].getResume_time() - ( processes[i].GetStart_time() + processes[i].getExec_time() ) );
+    	//bonus = floor([10*waiting_time/(now – arrival_time)]). With [x] = floor(x). now --> clk.getValue
+    	int now = clk.getValue();
+    	double bonus = Math.floor( (10 * waiting )/ ( now - processes[i].getArrival_time() ) );
+    	//New_priority = max(100,min(old_priority - bonus+5,139))
+    	// finding min(old_priority - bonus + 5, 139)
+    	int min;
+        int cal = processes[i].GetPriority() - (int)bonus + 5;	// (int)bonus casts the double into an integer
+        if( cal > 139 ) {
+        	min = 139;
+        } else {
+        	min = cal;
+        }
+        // computing new_priority
+        int new_priority;
+        if(min > 100) {
+        	new_priority = (int) min;
+        }
+        else {
+        	new_priority = 100;
+        }
+        // setting the new priority to the process
+        processes[i].setPriority(new_priority);
+    	}
+        // re-sorting the processes array based on the newly calculated priorities
         SortProcessesArray();
     }
 
@@ -75,10 +102,11 @@ public class Scheduler extends Thread{
                     running = Q2.dequeue();   //dequeue from expired
                     Q1.enqueue(running);      //enqueue to active
                     Thread RunThread = new Thread(running);
-                    if(running.getcount() == 0) {
-                        running.setState("Started"); 
+                    if(running.getcount() != 0) {
+                        running.setState("Resumed"); 
+                        running.setResume_time(clk.getValue());
                     }  
-                    running.setState("Resumed");  
+                    running.setState("Started");  
                     try {
                         RunThread.join();
                     } catch (InterruptedException e) {
@@ -89,10 +117,11 @@ public class Scheduler extends Thread{
                     running = Q1.dequeue();
                     Q2.enqueue(running);
                     Thread RunThread = new Thread(running);
-                    if(running.getcount() == 0) {
-                        running.setState("Started"); 
+                    if(running.getcount() != 0) {
+                        running.setState("Resumed"); 
+                        running.setResume_time(clk.getValue());
                     }  
-                    running.setState("Resumed");  
+                    running.setState("Started");  
                     try {
                         RunThread.join();
                     } catch (InterruptedException e) {

@@ -1,7 +1,7 @@
 public class Process extends Thread {
 	// Attributes
 	private String PID;
-	private int arrival_time, burst_time, priority, timeSlot;
+	private int arrival_time, burst_time, priority, timeSlot, waiting_time, resume_time;
 	private String state = "";		// can use boolean but we have more than 2 states
 	private int Start_time,count = 0; 
 	private int exec_time = Start_time - timeSlot;	//exec time = start time - timeslot
@@ -89,7 +89,23 @@ public class Process extends Thread {
 		count = count +1;
 	}
 	
-    public void run() {
+    public int getWaiting_time() {
+		return waiting_time;
+	}
+
+	public void setWaiting_time(int waiting_time) {
+		this.waiting_time = waiting_time;
+	}
+
+	public int getResume_time() {
+		return resume_time;
+	}
+
+	public void setResume_time(int resume_time) {
+		this.resume_time = resume_time;
+	}
+
+	public void run() {
 		IncrementCount();
 		while(true)
 		{
