@@ -1,6 +1,6 @@
 public class Clock extends Thread{
 
-    int value;
+    private int value;
 
     Clock() {
         value = 0;

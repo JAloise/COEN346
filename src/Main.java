@@ -3,8 +3,7 @@ import java.util.*;
 
 public class Main {
 
-    Clock clock = new Clock();
-
+    //read size of prcesses list from input file's first line
     static int size() {
         int size = 0;
         File file = new File("input.txt");
@@ -13,10 +12,11 @@ public class Main {
             size = sc.nextInt();
             sc.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            e.getMessage();
         }
         return size;
     }
+
     public static void main(String[] args) throws Exception {
 
         Clock clock = new Clock();
@@ -39,16 +39,16 @@ public class Main {
             }
             sc.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            e.getMessage();
         }
 
         Process processes[] = new Process[size];
+        
         //create process objects and place them in array of processes
         for(int i = 0 ; i < processes.length; i++) {
             Process Process = new Process(IDs[i], Arrivals[i], Bursts[i], Priorities[i], clock);
             processes[i] = Process;
         }
-
 
         //sort array of processs based on process priorities
 		Process temp;
@@ -62,12 +62,15 @@ public class Main {
 		    }
 		}
 
+        //clock starts
         Thread clockThread = new Thread(clock);  
         clockThread.start();
         
+        //
         Scheduler scheduler = new Scheduler(processes, clock); 
         Thread SchedulerThread = new Thread(scheduler);
 
+        //start scheduler after 1 second has elapsed
         boolean bool = true;
         while (bool)
         {
@@ -85,7 +88,8 @@ public class Main {
             }
         }
 
-        PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
-        System.setOut(out);
+        //redirect output to text file
+        //PrintStream out = new PrintStream(new FileOutputStream("output.txt"));
+        //System.setOut(out);
     }
 }

@@ -3,8 +3,8 @@ public class Process extends Thread {
 	private String PID;
 	private int arrival_time, burst_time, priority, timeSlot;
 	private String state = "";		// can use boolean but we have more than 2 states
-	private int Start_time,count = 0; //exec time = start time - timeslot
-	private int exec_time = Start_time - timeSlot;
+	private int Start_time,count = 0; 
+	private int exec_time = Start_time - timeSlot;	//exec time = start time - timeslot
 	private Clock clk;
 
 	public Process(String id, int a, int b, int p, Clock clk,int timeSlot) {
@@ -40,6 +40,14 @@ public class Process extends Thread {
 		return exec_time;
 	}
 
+	public void setExec_time(int exec) {
+		exec_time = exec;
+	}
+
+	public void UpdateExec_time(int time_slot) {
+		exec_time = exec_time - time_slot;
+	}
+
 	// Setters and Getters
 	public String getPID() {
 		return PID;
@@ -72,9 +80,17 @@ public class Process extends Thread {
 	public void setState(String state) {
 		this.state = state;
 	}
-    
+
+	public int getcount() {
+		return count;
+	}
+
+	public void IncrementCount() {
+		count = count +1;
+	}
+	
     public void run() {
-		count++;
+		IncrementCount();
 		while(true)
 		{
 			SetStart_time(getClk());
@@ -82,7 +98,14 @@ public class Process extends Thread {
 				Thread.sleep(10);
 				if(getClk() == timeSlot){
 					UpdateBurst_time(exec_time);
+					setExec_time(timeSlot);
+					if(exec_time == burst_time){
+						setState("finished");
+					} else {
+						setState("paused");
+					}	
 				}
+				System.out.println( "Time " + getClk() + ", " + getPID() + ", " + getState() );
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

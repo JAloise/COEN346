@@ -5,10 +5,10 @@ public class Scheduler extends Thread{
     Clock clk;
     Queue<Process> Q1 = new Queue<Process>();
     Queue<Process> Q2 = new Queue<Process>();
-    Process temp;
     int TimeSlot[] = new int[processes.length];
     FillEnqueue fill;
     int index = 0;
+    Process running;
 
     Scheduler(Process[] processes, Clock clk)
     {
@@ -35,6 +35,15 @@ public class Scheduler extends Thread{
 		    }
 		}
     }
+    
+    void UpdatePriority() {
+
+        //Updating Process priority
+        //waiting_time = sum_of_waiting_times
+        //bonus = [10*waiting_time/(now – arrival_time)]. With [x] = floor(x)
+        //New_priority = max(100,min(old_priority - bonus+5,139))
+        SortProcessesArray();
+    }
 
     void TimeSlot() {
         for(int i = 0 ; i<processes.length; i++) {
@@ -51,42 +60,49 @@ public class Scheduler extends Thread{
     }  
 
     public void run() {
-        
-        if(Q2.isEmpty()) //if queue initially set as active is empty,
-        {
-            //swap flags
-            boolean temp;
-            temp = Q2.getFlag();       
-            Q2.setFlag(Q1.getFlag());
-            Q1.setFlag(temp);
-            //Q1 is now the active queue and Q2 is the expired queue
-        } else {
-            if(Q2.getFlag()==true)
+        while( !( Q2.isEmpty() && Q1.isEmpty() ) ) {
+            if(Q2.isEmpty()) //if queue initially set as active is empty,
             {
-                Process running;
-                running = Q2.dequeue();
-                Thread RunThread = new Thread(running);  
-                RunThread.start();
-                processes[index].setState("Started");
+                //swap flags
+                boolean temp;
+                temp = Q2.getFlag();       
+                Q2.setFlag(Q1.getFlag());
+                Q1.setFlag(temp);
+                //Q1 is now the active queue and Q2 is the expired queue
             } else {
-                Process running;
-                running = Q1.dequeue();
-                Thread RunThread = new Thread(running);  
-                RunThread.start();
-                processes[index].setState("Started");
+                if(Q2.getFlag()==false)
+                {
+                    running = Q2.dequeue();   //dequeue from expired
+                    Q1.enqueue(running);      //enqueue to active
+                    Thread RunThread = new Thread(running);
+                    if(running.getcount() == 0) {
+                        running.setState("Started"); 
+                    }  
+                    running.setState("Resumed");  
+                    try {
+                        RunThread.join();
+                    } catch (InterruptedException e) {
+                        System.out.println("thread joining failed");
+                    }
+                } else {
+                    Process running;
+                    running = Q1.dequeue();
+                    Q2.enqueue(running);
+                    Thread RunThread = new Thread(running);
+                    if(running.getcount() == 0) {
+                        running.setState("Started"); 
+                    }  
+                    running.setState("Resumed");  
+                    try {
+                        RunThread.join();
+                    } catch (InterruptedException e) {
+                        System.out.println("thread joining failed");
+                    }
+                }    
             }
-
+            if ((processes[index]).getcount() % 2 == 0) {
+                UpdatePriority();
+            }    
         }
-
-        
-        //....
-        
-        
- 
-        //Updating Process priority
-        //waiting_time = sum_of_waiting_times
-        //bonus = [10*waiting_time/(now – arrival_time)]. With [x] = floor(x)
-        //New_priority = max(100,min(old_priority - bonus+5,139))
     }
-
 }
