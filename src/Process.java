@@ -1,16 +1,19 @@
 public class Process extends Thread {
 
-    private Clock clock;
-	private String PID;
-	private int arrival_time; 
-    private int burst_time; 
-    private int priority;
-    private String state;
-    private int timeSlot;
-	private int Start_time,count = 0;
-    private int resume_time; 
-	private int exec_time = 0;
+    //process attributes
+    private Clock clock;   // shared variable: clock
+	private String PID;    // process ID
+	private int arrival_time; //process arrival time; the time at which process becomes available to the scheduler
+    private int burst_time;     //process burst time: how long process soends time executing in the CPU
+    private int priority;       // process priiority of execution
+    private String state;       // state of processes that is manipulated by run implementation of each process thread
+    private int timeSlot;       // timeslot allocated to process everytime process is given CPU resources
+	private int Start_time;     //the time at which process starts executing
+    private int count = 0;      //keeps count of the number of times process has entered CPU
+    private int resume_time;    //the time at which a paused process is resumed
+	private int exec_time = 0;  //amount of time process has spent in the CPU: to track accumulative execution time
 	
+    //process constructor
     Process( String PID, int arrival_time, int burst_time,int priority, Clock clock)
     {
         this.PID = PID;
@@ -21,89 +24,89 @@ public class Process extends Thread {
         state = "";
     }
 
-    public int getResume_time() {
-        return resume_time;
+    //All Get methods
+
+    //method gets clock value
+    public int getClk() {
+        return clock.getValue();
     }
-
-    public void setResume_time(int resume_time) {
-        this.resume_time = resume_time;
+    //method gets Process iD
+    public String getPID() {
+        return PID;
+    }        
+    //method gets Arrival time
+    public int getArrival_time() {
+        return arrival_time;
     }
-
-    public int GetStart_time(){
-		return Start_time;
-	}
-
-	public void SetStart_time(int start){
-		Start_time = start;
-	}
-
+    //method gets Priority
+    public int GetPriority() {
+        return priority;
+    }
+    //method gets State
+    public String GetState() {
+        return state;
+    }    
+    //method gets Timeslot
     public int getTimeSlot() {
         return timeSlot;
     }
-
-    public void setTimeSlot(int timeslot) {
-        timeSlot = timeslot;
+    //method gets Start time
+    public int GetStart_time(){
+		return Start_time;
+	}
+    //method gets count
+    public int getcount(){
+        return count;
     }
-
+    //method gets Resume time
+    public int getResume_time() {
+        return resume_time;
+    }
+    //method gets Execution time
     public int getExecTime() {
         return exec_time;
     }
 
+    //All Set methods
+
+    //method sets process state
+    public void setState(String state) {
+        this.state = state;
+    }
+    //method Sets Timeslot
+    public void setTimeSlot(int timeslot) {
+        timeSlot = timeslot;
+    }
+    //method Sets Start Time
+	public void SetStart_time(int start){
+		Start_time = start;
+	}
+    //method Sets Resume Time
+    public void setResume_time(int resume_time) {
+        this.resume_time = resume_time;
+    }
+    
+    //method Increments count
+    public void IncrementCount() {
+        count++;
+    }
+    //execution time is updated by the timeslot given to process everytime process is executing in CPU
     public void UpdateExec_time(int time_slot) {
 		exec_time = exec_time + time_slot;
 	}
 
-    public int getcount(){
-        return count;
-    }
-    
-    public void IncrementCount() {
-        count++;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String GetState() {
-        return state;
-    }
-
-    public int getClk() {
-        return clock.getValue();
-    }
-
-    public String getPID() {
-        return PID;
-    }
-    
-    public int getArrival_time() {
-        return arrival_time;
-    }
-
-    public int getBurst_time() {
-        return burst_time;
-    }
-
-    public void UpdateBurst_time(int exec_time) {
-		burst_time = burst_time - exec_time;
-	}
-
-    public int GetPriority() {
-        return priority;
-    }
-
+    //run implementation: count is incremented everytime process enters CPU
     public void run() {
         while(true)
 		{
 			IncrementCount();
 			try {
 				Thread.sleep(10);
-				if(getClk() == (timeSlot + Start_time) ){					
-					if(exec_time == burst_time){
-						setState("finished");
+				if(getClk() == (timeSlot + Start_time) ) {  //once the timeslot allocated to a process expires;	
+					if(exec_time == burst_time){   //if process execution time is equals the burst time of the proccess
+						setState("finished");       //process is finished
 					} else {
-						setState("paused");
+						setState("paused");         //otherwise process is paused
 					}	
 				}
 			} catch (InterruptedException e) {

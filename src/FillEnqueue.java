@@ -1,13 +1,14 @@
 import java.util.concurrent.Semaphore;
 public class FillEnqueue extends Thread{
 
-    int size;
-    Semaphore s = new Semaphore(3);
-    Process[] processes = new Process[size];
-    Clock clk;
-    Queue<Process> expired = new Queue<Process>();
-    int index;
+    int size;   //shared value indicating size of array of processes
+    Semaphore s = new Semaphore(1); //semaphore used to enforce synchronization and protect critical section
+    Process[] processes = new Process[size];    //shared list: array of processes taken from input
+    Clock clk;  //shared object: clock 
+    Queue<Process> expired = new Queue<Process>();  //shared data structure; expired queue receiving arriving processes
+    int index;  //shared variable; index of array of processes
 
+    //construcor of class which receives all shared variables from scheduler.java class
     FillEnqueue(Process[] processes, Clock clk, Queue<Process> expired, int index, int size)
     {
         this.size = size;
@@ -16,7 +17,10 @@ public class FillEnqueue extends Thread{
         this.expired = expired;
         index = 0;
     }
-
+    //function to sort queue
+    // this method dequeues all queue objects into a temporary array (temp1)
+    //the temporary array then sorts the processes based on theur priorities using linear sort algorithm
+    //processes are then put back into the queue.
     public void SortQueue(Queue<Process> expired) {
         Process[] temp1 = new Process[size];
         Process temp;
@@ -39,6 +43,10 @@ public class FillEnqueue extends Thread{
         }
     }
 
+    // Run implementation: thread will constantly check clock and enqueues arriving processes into expired queue
+    // Shared variables; queue and index are manipulated inside the critical sections for the sake of synchronization
+    // Once queue is filled, thread will reach the end of its execution.
+    // Queue is sorted everytime a new process arrives
     public void run(){
         boolean exit = true;
         while(exit)
@@ -66,7 +74,6 @@ public class FillEnqueue extends Thread{
             if(expired.numofelements == size){
                 exit = false;
             }
-
 		}
     }
 }
