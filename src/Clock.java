@@ -7,14 +7,14 @@ public class Clock extends Thread{
     }
 
     public int getValue() {
-        return (value*20);
+        return (value*50);
     }
 
     public void run() {
         while (true){
             try {
-                Thread.sleep(20);
-                value += 1 ;
+                Thread.sleep(50);
+                value = value + 1 ;
             } catch (InterruptedException e) {
                 e.getStackTrace();
             }

@@ -35,6 +35,20 @@ public class Queue<T> {
 		}
 		numofelements++;
 	}
+
+	public boolean ExistsInQueue(Process p){
+		boolean bool = false;
+		Node current = first;
+		while(current != null){
+			if(current.process.getPID() == p.getPID()) {
+				bool = true;
+			} else {
+				bool = false;
+			}
+			current = current.next;
+		}  
+		return bool;
+	}
 	
 	public Process dequeue() {
 		Process process = first.process;

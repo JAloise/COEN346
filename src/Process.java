@@ -1,30 +1,35 @@
 public class Process extends Thread {
-	// Attributes
+
+    private Clock clock;
 	private String PID;
-	private int arrival_time, burst_time, priority, timeSlot, waiting_time, resume_time;
-	private String state = "";		// can use boolean but we have more than 2 states
-	private int Start_time,count = 0; 
-	private int exec_time = Start_time - timeSlot;	//exec time = start time - timeslot
-	private Clock clk;
-
-	public Process(String id, int a, int b, int p, Clock clk,int timeSlot) {
-		this.PID = id;
-		this.arrival_time = a;
-		this.burst_time = b;
-		this.priority = p;
-		this.timeSlot = timeSlot;
-		this.clk = clk;
-	}
-
-	public Process(String id, int a, int b, int p, Clock clk) {
-		this.PID = id;
-		this.arrival_time = a;
-		this.burst_time = b;
-		this.priority = p;
-		this.clk = clk;
-	}
+	private int arrival_time; 
+    private int burst_time; 
+    private int priority;
+    private String state;
+    private int timeSlot;
+	private int Start_time,count = 0;
+    private int resume_time; 
+	private int exec_time = 0;
 	
-	public int GetStart_time(){
+    Process( String PID, int arrival_time, int burst_time,int priority, Clock clock)
+    {
+        this.PID = PID;
+		this.arrival_time = arrival_time;
+		this.burst_time = burst_time;
+		this.priority = priority;
+        this.clock = clock;
+        state = "";
+    }
+
+    public int getResume_time() {
+        return resume_time;
+    }
+
+    public void setResume_time(int resume_time) {
+        this.resume_time = resume_time;
+    }
+
+    public int GetStart_time(){
 		return Start_time;
 	}
 
@@ -32,100 +37,80 @@ public class Process extends Thread {
 		Start_time = start;
 	}
 
-	public int getClk() {
-		return clk.getValue();
+    public int getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(int timeslot) {
+        timeSlot = timeslot;
+    }
+
+    public int getExecTime() {
+        return exec_time;
+    }
+
+    public void UpdateExec_time(int time_slot) {
+		exec_time = exec_time + time_slot;
 	}
 
-	public int getExec_time() {
-		return exec_time;
-	}
+    public int getcount(){
+        return count;
+    }
+    
+    public void IncrementCount() {
+        count++;
+    }
 
-	public void setExec_time(int exec) {
-		exec_time = exec;
-	}
+    public void setState(String state) {
+        this.state = state;
+    }
 
-	public void UpdateExec_time(int time_slot) {
-		exec_time = exec_time - time_slot;
-	}
+    public String GetState() {
+        return state;
+    }
 
-	// Setters and Getters
-	public String getPID() {
-		return PID;
-	}
+    public int getClk() {
+        return clock.getValue();
+    }
 
-	public int getArrival_time() {
-		return arrival_time;
-	}
+    public String getPID() {
+        return PID;
+    }
+    
+    public int getArrival_time() {
+        return arrival_time;
+    }
 
-	public int getBurst_time() {
-		return burst_time;
-	}
+    public int getBurst_time() {
+        return burst_time;
+    }
 
-	public void setBurst_time(int burst) {
-		burst_time = burst;
-	}
-
-	public void UpdateBurst_time(int exec_time) {
+    public void UpdateBurst_time(int exec_time) {
 		burst_time = burst_time - exec_time;
 	}
 
-	public int GetPriority() {
-		return priority;
-	}
+    public int GetPriority() {
+        return priority;
+    }
 
-	public String GetState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public int getcount() {
-		return count;
-	}
-
-	public void IncrementCount() {
-		count = count +1;
-	}
-	
-    public int getWaiting_time() {
-		return waiting_time;
-	}
-
-	public void setWaiting_time(int waiting_time) {
-		this.waiting_time = waiting_time;
-	}
-
-	public int getResume_time() {
-		return resume_time;
-	}
-
-	public void setResume_time(int resume_time) {
-		this.resume_time = resume_time;
-	}
-
-	public void run() {
-		IncrementCount();
-		while(true)
+    public void run() {
+        while(true)
 		{
-			SetStart_time(getClk());
+			IncrementCount();
 			try {
 				Thread.sleep(10);
-				if(getClk() == timeSlot){
-					UpdateBurst_time(exec_time);
-					setExec_time(timeSlot);
+				if(getClk() == (timeSlot + Start_time) ){					
 					if(exec_time == burst_time){
 						setState("finished");
 					} else {
 						setState("paused");
 					}	
 				}
-				System.out.println( "Time " + getClk() + ", " + getPID() + ", " + getState() );
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+            //System.out.println( "Time " + getClk() + ", " + getPID() + ", " + GetState() );
 		}
-	}
+    }
 }
