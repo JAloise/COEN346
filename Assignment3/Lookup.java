@@ -15,5 +15,9 @@ public class Lookup implements Command {
 	public void setID(int i) {
 		this.id = i;
 	}
+	
+	public void run() {
+		// implement lookup operation HERE
+	}
 
 }

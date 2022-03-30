@@ -26,5 +26,9 @@ public class Store implements Command {
 	public void setValue(int v) {
 		this.value = v;
 	}
+	
+	public void run() {
+		// implement store operation HERE
+	}
 
 }

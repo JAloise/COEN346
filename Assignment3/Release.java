@@ -15,5 +15,9 @@ public class Release implements Command {
 	public void setID(int i) {
 		this.id = i;
 	}
+	
+	public void run() {
+		// implement release operation HERE
+	}
 
 }
