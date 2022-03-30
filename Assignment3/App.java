@@ -59,41 +59,34 @@ public class App {
             Scanner sc4 = new Scanner(commands);
 
             Variable[] Store = new Variable[NumOfStoreCommands];
-            int StoreIndex = 0;
-
-            while (sc4.hasNextLine()) {
-                String command = sc4.next();  
-                int id = Integer.parseInt(sc4.next());
-                int val = Integer.parseInt(sc4.next());
-                if(command ==  "Store") {
-                    Variable store = new Variable(id, val);
-                    Store[StoreIndex] = store;
-                    StoreIndex++;
-                }
-                sc4.nextLine();
-            }
-            sc4.close();
-
-            Scanner sc5 = new Scanner(commands);
             Variable[] Release = new Variable[NumOfReleaseCommands];
             Variable[] Lookup = new Variable[NumOfLookupCommands];
+            int StoreIndex = 0;
             int ReleaseIndex = 0;
             int LookupIndex = 0;
 
-            while (sc5.hasNextLine()) {
-                String command = sc5.next();  
-                int id = Integer.parseInt(sc5.next());
-                if (command == "Release") {
-                    Release[ReleaseIndex].setID(id);
+            while (sc4.hasNextLine()) {
+                String command = sc4.next();
+                if(command == "Store") {
+                    int id = Integer.parseInt(sc4.next());
+                    int val = Integer.parseInt(sc4.next());
+                    Variable store = new Variable(id, val);
+                    Store[StoreIndex] = store;
+                    StoreIndex++;
+                } else if(command == "Release") {
+                    int id = Integer.parseInt(sc4.next());
+                    Variable release = new Variable(id);
+                    Release[ReleaseIndex] = release;
                     ReleaseIndex++;
-                }
-                if (command == "Lookup") {
-                    Lookup[LookupIndex].setID(id);
+                } else if(command == "Lookup") {
+                    int id = Integer.parseInt(sc4.next());
+                    Variable lookup = new Variable(id);
+                    Lookup[LookupIndex] = lookup;
                     LookupIndex++;
-                }
+                }  
+                sc4.nextLine();
             }
-
-            sc5.close();
+            sc4.close();
 
             System.out.println("ID: " + Store[0].getID() + "var: " + Store[0].getValue());
             System.out.println("ID: " + Release[0].getID() + "var: " + Release[0].getValue());
@@ -103,7 +96,7 @@ public class App {
             Thread clockThread = new Thread(clock);
             clockThread.start();
 
-            Scheduler Scheduler = new Scheduler(StoreIndex, ReleaseIndex, LookupIndex, Store, Release, Lookup, clock);
+            Scheduler Scheduler = new Scheduler(Store, Release, Lookup, clock);
             Thread SchdulerThread = new Thread(Scheduler);
             SchdulerThread.start();
 
