@@ -16,21 +16,20 @@ public class App {
 
         try{
             Scanner sc1 = new Scanner(processes);  //using scanner to read tokens from processes.txt
+            ArrayList<Process> Processeses = new ArrayList<Process>();
             while (sc1.hasNextLine()) {  //populating arrays 
-                NumOfCores = sc1.nextInt();     
-                NumOfProcess = sc1.nextInt();   
+                boolean skip = false;
+                if(!skip) {
+                    NumOfCores = sc1.nextInt();     
+                    NumOfProcess = sc1.nextInt();
+                    skip = true; 
+                }
+                int startTime = sc1.nextInt();
+                int Duration = sc1.nextInt();
+                Process p = new Process(startTime,Duration);   
+                Processeses.add(p);   
             }
             sc1.close();
-            Process[] Process = new Process[NumOfProcess];
-            int i = 0;
-
-            Scanner sc2 = new Scanner(processes);
-            while (sc2.hasNextLine() && (i<NumOfProcess)) { 
-                Process[i].setStartTime(sc2.nextInt());    
-                Process[i].setDuration(sc2.nextInt());
-                i++;
-            }
-            sc2.close();
 
             Scanner sc3 = new Scanner(memconfig);  //using scanner to read tokens from memconfig.txt
             while (sc3.hasNextLine()) {  
@@ -42,25 +41,25 @@ public class App {
 
             Scanner sc4 = new Scanner(commands);  //using scanner to read tokens from commands.txt
 
-            ArrayList<Command> our = new ArrayList<Command>();
+            ArrayList<Command> command = new ArrayList<Command>();
 
             while (sc4.hasNextLine()) {
-                String command = sc4.next();
-                if(command == "Store") {
+                String str = sc4.next();
+                if(str == "Store") {
                     int id = Integer.parseInt(sc4.next());
                     int val = Integer.parseInt(sc4.next());
                     Command c = new Store(id, val);
-                    our.add(c);
+                    command.add(c);
 
-                } else if(command == "Release") {
+                } else if(str == "Release") {
                     int id = Integer.parseInt(sc4.next());
                     Command c = new Release(id);
-                    our.add(c);
+                    command.add(c);
 
-                } else if(command == "Lookup") {
+                } else if(str == "Lookup") {
                     int id = Integer.parseInt(sc4.next());
                     Command c = new Lookup(id);
-                    our.add(c);
+                    command.add(c);
                 }  
                 sc4.nextLine();
             }
@@ -70,11 +69,11 @@ public class App {
             Thread clockThread = new Thread(clock);
             clockThread.start();
 
-            Scheduler Scheduler = new Scheduler(Process, NumOfCores, NumOfProcess, our, clock);
+            Scheduler Scheduler = new Scheduler(Processeses, NumOfCores, command, clock);
             Thread SchdulerThread = new Thread(Scheduler);
             SchdulerThread.start();
 
-            MMU mmu = new MMU(NumOfCores, NumOfProcess, NumOfPages);
+            MMU mmu = new MMU(timeout, K, NumOfPages);
             Thread MMUThread = new Thread(mmu);
             MMUThread.start();
 

@@ -1,20 +1,18 @@
 public class Process {
 
     private int StartTime, Duration;
-    private String command;
-
-    Process(int StartTime, int Duration, String command) {
-        this.setStartTime(StartTime);
-        this.setDuration(Duration);
-        this.setCommand(command);
+    private int PID = 0;
+    Process(int StartTime, int Duration) {
+        this.StartTime = StartTime;
+        this.Duration = Duration;
     }
 
-    public String getCommand() {
-        return command;
+    public int getPID() {
+        return PID;
     }
 
-    public void setCommand(String command) {
-        this.command = command;
+    public void setPID(int PID) {
+        this.PID = PID;
     }
 
     public int getDuration() {
