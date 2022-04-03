@@ -7,10 +7,6 @@ public class Variable {
         this.value = value;
     }
 
-    Variable(int ID) {
-        this.ID = ID;
-    }
-
     public int getID() {
         return ID;
     }
@@ -19,11 +15,11 @@ public class Variable {
         return value;
     }
 
-    public void setValue(int Value) {
-        value = Value;
+    public void setValue(int value) {
+        this.value = value;
     }
 
     public void setID(int iD) {
-        ID = iD;
+        this.ID = iD;
     }
 }

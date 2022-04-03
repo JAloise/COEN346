@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.io.*;
 
 public class Scheduler extends Thread{
 
@@ -28,6 +29,14 @@ public class Scheduler extends Thread{
         Thread fillThread = new Thread(fill);  //FillEnqueue will populate the expired queue with arriving processes
         fillThread.start();                    // in a separate thread that runs concurrently with the scheduler thread
     }
+    
+    //function to redirect output to output.txt file
+    public void writeToFile(String s) throws IOException {
+        FileWriter out = new FileWriter("output.txt",true);
+        out.write(s);
+        out.flush();
+        out.close();
+    }
 
     public void run() {
         time = clock.getValue();
@@ -37,7 +46,7 @@ public class Scheduler extends Thread{
         //String CurrentState = "";
         while(!( Q2.isEmpty() && Q1.isEmpty())){ 
 
-            //chekcs which queue is active and which one is expired based on flags
+            //checks which queue is active and which one is expired based on flags
             if(Q1.getFlag() == true){
                 active = Q1;
                 expired = Q2;
@@ -56,6 +65,47 @@ public class Scheduler extends Thread{
                 running = active.dequeue();   //dequeue from expired
                 running.setPID(commands.get(CommandIndex).getID());
                 CommandIndex++;
+                Thread runningThread = new Thread(running);
+                runningThread.start();
+                try {
+					runningThread.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
+                if( clock.getValue() >= running.getStartTime() ) {
+                	if ( NumOfCores < 2 ) {
+                		active.enqueue(running);
+                		running.setState("Started");
+                		int start_time = clock.getValue();
+                		String s = "Clock: " + start_time + ", Process " + running.getPID() + ": " + running.GetState() + "\n";
+                		String s1 = "Clock: " + start_time + ", Process " + running.getPID() + ": " + running.getCommand().getCommandInfo() + "\n";
+                		try {
+							writeToFile(s);
+							writeToFile(s1);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                		NumOfCores++;
+                	}
+                }
+                // if process duration ends, dequeue from active and enqueue in expired, and change state to "finished"
+                // also decrease number of used cores
+                if( clock.getValue() >= (running.getStartTime()+running.getDuration()) ) {
+                	int end_time = clock.getValue();
+                	running.setState("Finished");
+                	expired.enqueue(active.dequeue()); // not sure about this line
+                	String s2 = "Clock: " + end_time + ", Process " + running.getPID() + ": " + running.GetState() + "\n";
+                	try {
+						writeToFile(s2);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+                	NumOfCores--;
+                }
             }
         } 
     }

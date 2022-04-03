@@ -39,6 +39,7 @@ public class FillEnqueue extends Thread{
                             s.acquire();
                             enqueue.enqueue(Processes.get(i));
                             //SortQueue(expired);
+                            Processes.get(i).setState("Arrived");
                             s.release();
                         }
                     }

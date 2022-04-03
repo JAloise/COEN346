@@ -1,23 +1,28 @@
 public class Release implements Command {
 
-	private int id;
+	public int id;
 	
 	Release() {};
 	
-	Release(int id) {
-		this.id =id;
+	Release(int i) {
+		this.id =i;
 	}
 	
 	public int getID() {
-		return id;
+		return this.id;
 	}
 
-	public void setID(int id) {
-		this.id = id;
+	public void setID(int i) {
+		this.id = i;
 	}
 	
 	public void run() {
 		// implement release operation HERE
+	}
+	
+	public String getCommandInfo() {
+		String s = "Release: Variable " + getID();
+		return s;
 	}
 
 }
