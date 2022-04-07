@@ -1,3 +1,4 @@
+
 public class Store implements Command {
 
 	private int value;
@@ -27,9 +28,5 @@ public class Store implements Command {
 	public void run() {
 		// implement store operation HERE
 	}
-	
-	public String getCommandInfo() {
-		String s = "Store: Variable " + getID() + ", Value: " + getValue();
-		return s;
-	}
+
 }

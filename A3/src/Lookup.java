@@ -1,29 +1,23 @@
 public class Lookup implements Command {
 
-	public int id;
+	private int id;
 	
 	Lookup() {};
 	
-	Lookup(int i) {
-		this.id =i;
+	Lookup(int id) {
+		this.id =id;
 	}
 	
 	public int getID() {
-		return this.id;
+		return id;
 	}
 
-	public void setID(int i) {
-		this.id = i;
+	public void setID(int id) {
+		this.id = id;
 	}
 	
 	public void run() {
 		// implement lookup operation HERE
-	}
-	
-	
-	public String getCommandInfo() {
-		String s = "Lookup: Variable: " + getID();
-		return s;
 	}
 
 }

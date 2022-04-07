@@ -5,7 +5,6 @@ public class App {
     public static void main(String[] args) throws Exception {
 
         int NumOfCores = 0;
-        int NumOfProcess = 0;
         int NumOfPages = 0;
         int K = 0; 
         int timeout = 0; //command.txt
@@ -17,59 +16,63 @@ public class App {
         try{
             Scanner sc1 = new Scanner(processes);  //using scanner to read tokens from processes.txt
             ArrayList<Process> Processeses = new ArrayList<Process>();
+            boolean skip = false;
             while (sc1.hasNextLine()) {  //populating arrays 
-                boolean skip = false;
                 if(!skip) {
                     NumOfCores = sc1.nextInt();     
-                    NumOfProcess = sc1.nextInt();
+                    sc1.nextLine();
                     skip = true; 
                 }
+                String ID = sc1.next();
                 int startTime = sc1.nextInt();
                 int Duration = sc1.nextInt();
-                Process p = new Process(startTime,Duration);   
+                Process p = new Process(ID,startTime,Duration);   
                 Processeses.add(p);   
             }
             sc1.close();
 
-            Scanner sc3 = new Scanner(memconfig);  //using scanner to read tokens from memconfig.txt
-            while (sc3.hasNextLine()) {  
-                NumOfPages = sc3.nextInt();     
-                K = sc3.nextInt();
-                timeout =sc3.nextInt();
+            Scanner sc2 = new Scanner(memconfig);  //using scanner to read tokens from memconfig.txt
+            while (sc2.hasNextLine()) {  
+                NumOfPages = sc2.nextInt();     
+                K = sc2.nextInt();
+                timeout =sc2.nextInt();
             }
-            sc3.close();
+            sc2.close();
 
-            Scanner sc4 = new Scanner(commands);  //using scanner to read tokens from commands.txt
+            Scanner sc3 = new Scanner(commands);  //using scanner to read tokens from commands.txt
 
             ArrayList<Command> command = new ArrayList<Command>();
 
-            while (sc4.hasNextLine()) {
-                String str = sc4.next();
+            while (sc3.hasNextLine()) {
+                String str = sc3.next();
                 if(str == "Store") {
-                    int id = Integer.parseInt(sc4.next());
-                    int val = Integer.parseInt(sc4.next());
+                    int id = Integer.parseInt(sc3.next());
+                    int val = Integer.parseInt(sc3.next());
                     Command c = new Store(id, val);
                     command.add(c);
 
                 } else if(str == "Release") {
-                    int id = Integer.parseInt(sc4.next());
+                    int id = Integer.parseInt(sc3.next());
                     Command c = new Release(id);
                     command.add(c);
 
                 } else if(str == "Lookup") {
-                    int id = Integer.parseInt(sc4.next());
+                    int id = Integer.parseInt(sc3.next());
                     Command c = new Lookup(id);
                     command.add(c);
                 }  
-                sc4.nextLine();
+                sc3.nextLine();
             }
-            sc4.close();
+            sc3.close();
 
-            Clock clock = new Clock();
-            Thread clockThread = new Thread(clock);
+            for(Process p: Processeses){
+                p.CommandList(command);
+            }
+
+            Thread clockThread = new Thread(MyClock.getInstance());
             clockThread.start();
 
-            Scheduler Scheduler = new Scheduler(Processeses, NumOfCores, command, clock);
+            Scheduler Scheduler = new Scheduler(Processeses, NumOfCores, command);
             Thread SchdulerThread = new Thread(Scheduler);
             SchdulerThread.start();
 

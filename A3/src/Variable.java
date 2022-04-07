@@ -11,15 +11,15 @@ public class Variable {
         return ID;
     }
 
+    public void setID(int iD) {
+        ID = iD;
+    }
+
     public int getValue() {
         return value;
     }
 
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    public void setID(int iD) {
-        this.ID = iD;
+    public void setValue(int Value) {
+        value = Value;
     }
 }
