@@ -35,12 +35,27 @@ public class Scheduler extends Thread{
         {
             for(Process p : Processes){
                 //check p Process start time; compare (>=) to cTime (current Time)
-                // check numofcores. if >0, create process thread, and start the thread, also add thread object to CreatedThreads ArrayList
+                // check NumOfCores. if > 0, create process thread, and start the thread, also add thread object to CreatedThreads ArrayList
                 // once thread is started; NumofCores--
+            	int start_time = p.getStartTime();
+            	if( start_time >= cTime ) {
+            		if( NumOfCores > 0 ) {
+            			Thread processThread = new Thread(p);
+            			processThread.start();
+            			CreatedThreads.add(processThread);
+            			NumOfCores--;
+            		}
+            	}
             }
 
             //checking for duration( how long process in execution)
-            //remove thread from creathed thread ArrayList,
+            //remove thread from CreatedThreads ArrayList,
+            for(Process p : Processes) {
+            	int exec_time = cTime - p.getStartTime();
+            	if(exec_time >= p.getDuration()) {
+            		CreatedThreads.remove(p);
+            	}
+            }
             
             try {
                 Thread.sleep(20);
