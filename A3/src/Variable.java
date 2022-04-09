@@ -7,6 +7,10 @@ public class Variable {
         this.value = value;
     }
 
+    Variable(int ID) {
+        this.ID = ID;
+    }
+
     public int getID() {
         return ID;
     }

@@ -1,9 +1,8 @@
 public class MyClock implements Runnable {
 
     private static MyClock instance;
-    //value incremented by value very period (clock time unit)
     private int time;
-    private boolean finishProg;
+    private boolean finishProg = false;
     
     public boolean isFinishProg(){
         return finishProg;
@@ -31,12 +30,13 @@ public class MyClock implements Runnable {
     @Override
     //implementation of run method of the clock thread
     public void run() {
-        while (!finishProg){
+        while (true){
             try {
                 Thread.sleep(100);   //clock periodicity
                 
             } catch (InterruptedException e) { e.getStackTrace(); }
             time = time + 100 ; //vlock value is incremented every 50 ms
+            
         }
     }
 }

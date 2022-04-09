@@ -1,23 +1,26 @@
-public class Lookup implements Command {
+public class Lookup extends Command {
 
-	private int id;
-	
-	Lookup() {};
-	
-	Lookup(int id) {
-		this.id =id;
-	}
-	
-	public int getID() {
-		return id;
-	}
+	@Override
+	public int getVarValue() { return 0; }
 
-	public void setID(int id) {
-		this.id = id;
+	@Override
+	public void setVarValue(int value) {}
+	
+	@Override
+    public int getVarID(){ return variable.getID(); }
+		
+	@Override
+    public void setVarID(int var){ variable.setID(var);	}
+
+	@Override
+    public String getCommands(){ return command; }
+
+	@Override
+    public void setCommands(String command) { this.command = command; }
+
+	Lookup(Variable variable, String command) {
+		this.variable = variable;
+		this.command = command;
 	}
 	
-	public void run() {
-		// implement lookup operation HERE
-	}
-
 }

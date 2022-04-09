@@ -1,8 +1,11 @@
-interface Command {
+public abstract class Command{
 	
-	// Interface for "Store", "Lookup", "Release" classes
-	public int getID();
-	public void setID(int i);
-	// to be implemented differently in each file depending on the operation
-	public void run();
+	protected Variable variable;
+	protected String command;
+	public abstract int getVarValue();
+	public abstract void setVarValue(int value);
+    public abstract int getVarID();
+	public abstract void setVarID(int ID);
+	public abstract String getCommands();
+	public abstract void setCommands(String command);
 }
