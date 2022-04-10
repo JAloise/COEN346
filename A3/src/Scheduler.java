@@ -3,7 +3,6 @@ import java.util.Comparator;
 
 public class Scheduler extends Thread{
 
-    private ArrayList<Thread> CreatedThreads;
     private ArrayList<Process> Processes;
     private int NumOfCores;
 
@@ -16,6 +15,7 @@ public class Scheduler extends Thread{
         Comparator<Process> c = (p1, p2) -> ((Integer)p1.getStartTime()).compareTo((Integer)p2.getStartTime());
         Processes.sort(c);
         boolean finishProg = false;
+        ArrayList<Thread> CreatedThreads = new ArrayList<Thread>();
         while(!finishProg) 
         {
             int cTime = MyClock.getInstance().getTime();
@@ -25,7 +25,6 @@ public class Scheduler extends Thread{
                 // once thread is started; NumofCores--
             	int start_time = p.getStartTime();
                 Thread processThread = new Thread(p);
-                ArrayList<Thread> CreatedThreads = new ArrayList<Thread>();
             	if( start_time >= cTime ) {
             		if( NumOfCores > 0 ) {
             			processThread.start();

@@ -7,11 +7,11 @@ public class App {
         int NumOfCores = 0;
         int NumOfPages = 0;
         int K = 0; 
-        int timeout = 0; //command.txt
+        int timeout = 0; 
 
-        File processes = new File("processes.txt");  //opening processes file
         File memconfig = new File("memconfig.txt");  //opening memconfig file
         File commands = new File("commands.txt");  //opening commands file
+        File processes = new File("processes.txt");  //opening processes file
 
         try{
             Scanner sc1 = new Scanner(memconfig);  //using scanner to read tokens from memconfig.txt
@@ -30,23 +30,22 @@ public class App {
                     int id = Integer.parseInt(sc2.next());
                     int val = Integer.parseInt(sc2.next());
                     Variable var = new Variable(id, val);
-                    Command c = new Store(var, str);
-                    command.add(c);
+                    command.add(new Store(var, str));
                 } else if(str == "Release") {
                     int id = Integer.parseInt(sc2.next());
                     Variable var = new Variable(id);
-                    Command c = new Store(var, str);
-                    command.add(c);
+                    command.add(new Store(var, str));
 
                 } else if(str == "Lookup") {
                     int id = Integer.parseInt(sc2.next());
                     Variable var = new Variable(id);
-                    Command c = new Store(var, str);
-                    command.add(c);
+                    command.add(new Store(var, str));
                 }  
                 sc2.nextLine();
             }
             sc2.close();
+
+            MMU mmu = new MMU(timeout, K, NumOfPages, command);
 
             Scanner sc3 = new Scanner(processes);  //using scanner to read tokens from processes.txt
             ArrayList<Process> Processeses = new ArrayList<Process>();
@@ -60,7 +59,7 @@ public class App {
                 String ID = sc3.next();
                 int startTime = sc3.nextInt();
                 int Duration = sc3.nextInt();
-                Process p = new Process(ID, startTime, Duration, command);   
+                Process p = new Process(ID, startTime, Duration, command, mmu);   
                 Processeses.add(p);   
             }
             sc3.close();
@@ -72,11 +71,10 @@ public class App {
             Thread SchdulerThread = new Thread(Scheduler);
             SchdulerThread.start();
 
-            // MMU mmu = new MMU(timeout, K, NumOfPages, command);
-            // Thread MMUThread = new Thread(mmu);
-            // MMUThread.start();
+            Thread MMUThread = new Thread(mmu);
+            MMUThread.start();
 
-            // MMUThread.join();
+            MMUThread.join();
             SchdulerThread.join();
             clockThread.join();
             

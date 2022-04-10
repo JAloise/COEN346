@@ -9,15 +9,16 @@ public class Process implements Runnable{
     private int StartTime;
     private int Duration;   
     private int AccessIndex = 0;  //must be updated withing critical section
+    private MMU mmu;
 
-    Process(String PID, int StartTime, int Duration, ArrayList<Command> commands) {
+    Process(String PID, int StartTime, int Duration, ArrayList<Command> commands, MMU mmu) {
         semaphore = new Semaphore(1);
         this.commands = commands;
         this.PID = PID;
         this.StartTime = StartTime;
         this.Duration = Duration;
+        this.mmu = mmu;
     }
-
 
     public String getPID() {
         return PID;
@@ -53,6 +54,7 @@ public class Process implements Runnable{
 
                 //critical section
                 Command running = commands.get(AccessIndex);
+                mmu.APICall(running);
                 String ev = "Clock: " + cTime + ", Process " + PID + ", " + running.command + 
                             ": Variable " + running.getVarID() + ", Value :" + running.getVarValue() + "\n";
                 MyClock.PrintEvent(ev);
@@ -68,6 +70,5 @@ public class Process implements Runnable{
                 finishProcess = true;
             }
         }
-        
     }
 }
