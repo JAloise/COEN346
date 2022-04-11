@@ -18,10 +18,12 @@ public class Release extends Command {
 	@Override
     public void setCommands(String command) { this.command = command; }
 
+	@Override
+	public String printType() { return command; }
+
+	//Release command class constructor
 	Release(Variable variable, String command) {
 		this.variable = variable;
 		this.command = command;
 	}
-
-	
 }

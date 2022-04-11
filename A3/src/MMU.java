@@ -8,11 +8,16 @@ public class MMU extends Thread{
     private int K;
     private int NumOfPages;
     private ArrayList<Page> Pages = new ArrayList<Page>();
+    private Command command;
 
     MMU(int timeout, int K, int NumOfPages) {
         this.timeout = timeout;
         this.K = K;
         this.NumOfPages = NumOfPages;
+    }
+
+    public void setCommand(Command c) {
+        command = c;
     }
 
     public void writeToFile(String s){
@@ -133,10 +138,12 @@ public class MMU extends Thread{
 
     public void ReplacePage() {
         for(Page p : Pages) {
-            if(p.TimeStampDifference() > timeout){
+            if(p.TimeStampDifference() > timeout) {
                 Pages.remove(0);
             }
         }
     }
-
+    public void run() {
+        APICall(command);
+    }
 }

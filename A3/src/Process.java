@@ -3,78 +3,64 @@ import java.util.concurrent.Semaphore;
 
 public class Process implements Runnable{
     
-    private final Semaphore semaphore;
-    private ArrayList<Command> commands = new ArrayList<Command>();
-    private String PID;
-    private int StartTime;
-    private int Duration;   
+    private final Semaphore semaphore;  //binary semaphore
+    private ArrayList<Command> commands = new ArrayList<>();   //ArrayList of commands   
+    private String PID; //process ID
+    private int StartTime;  //process start time
+    private int Duration;   // process duration
     private int AccessIndex = 0;  //must be updated withing critical section
-    private MMU mmu;
+    private MMU mmu;    //mmu object
+    private boolean procStarted = false;
+    private boolean finishProc = false; 
 
+    //process class constructor
     Process(String PID, int StartTime, int Duration, MMU mmu, ArrayList<Command> commandsList) {
         semaphore = new Semaphore(1);
         this.PID = PID;
         this.StartTime = StartTime;
         this.Duration = Duration;
         this.mmu = mmu;
-        AddCommands(commandsList);
+        commands = commandsList;
     }
-
+    
+    //AddCommands to the arrayList of commands from commandsList Array passed to the contructor
     public void AddCommands(ArrayList<Command> commandsList){
         for(Command command : commandsList){
             commands.add(command);
         }
     }
 
-    public String getPID() {
-        return PID;
-    }
+    //getter/setter methods for Process attributes
+    public boolean isProcStarted() { return procStarted; }
 
-    public void setPID(String pID) {
-        this.PID = pID;
-    }
+    public void setProcStarted(boolean procStarted) { this.procStarted = procStarted; }
 
-    public int getDuration() {
-        return Duration;
-    }
+    public void setFinishProc(boolean finishProg) { this.finishProc = finishProg; }
 
-    public void setDuration(int duration) {
-        this.Duration = duration;
-    }
+    public Boolean isFinishProc() { return finishProc; }
 
-    public int getStartTime() {
-        return StartTime;
-    }
+    public String getPID() { return PID; }
 
-    public void setStartTime(int startTime) {
-        this.StartTime = startTime;
-    }
+    public int getDuration() { return Duration; }
+
+    public int getStartTime() { return StartTime; }
 
     public void run() {
-        Boolean finishProcess = false;
-        while(!finishProcess) {
-            int cTime = MyClock.getInstance().getTime();
-            int exec_time = StartTime - cTime ; 
+        while(!finishProc) {
+            int cTime = MyClock.getInstance().getTime(); 
             try {
-                semaphore.acquire();
-
-                //critical section
+                semaphore.acquire();//critical section: enclosed by binary semaphore acquire() and release() method
                 Command running = commands.get(AccessIndex);
-                mmu.APICall(running);
+                mmu.setCommand(running);
+                Thread MMUThread = new Thread(mmu);
+                MMUThread.start();
                 String ev = "Clock: " + cTime + ", Process " + PID + ", " + running.command + 
-                            ": Variable " + running.getVarID() + ", Value :" + running.getVarValue() + "\n";
+                ": Variable " + running.getVarID() + ", Value :" + running.getVarValue() + "\n";
                 MyClock.PrintEvent(ev);
                 AccessIndex++;
-
+                MMUThread.join();
             } catch (InterruptedException e) {  e.printStackTrace();    }
             finally {   semaphore.release();   }
-            //checking for duration( how long process in execution)
-            //remove thread from CreatedThreads ArrayList,
-            if(exec_time >= Duration) {
-                String ev = "Clock: " + cTime + ", Process " + PID + ": Finished\n"; 
-                MyClock.PrintEvent(ev);
-                finishProcess = true;
-            }
         }
     }
 }

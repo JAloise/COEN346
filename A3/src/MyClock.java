@@ -2,23 +2,13 @@ import java.io.*;
 
 public class MyClock implements Runnable {
 
-    private static MyClock instance;
-    private int time;
-    private boolean finishProg = false;
-    
-    public boolean isFinishProg(){
-        return finishProg;
-    }
-
-    public void setFinishProg(boolean setFinishProg) {
-        this.finishProg = setFinishProg;
-    }
-
+    private static MyClock instance;    //clock instance
+    private int time;                   //time value
+        
     //returns clock value: current clock value * clock periodicity
-    public int getTime() {
-        return time;
-    }
+    public int getTime() { return time; }
 
+    //method returning instance of clock
     public synchronized static MyClock getInstance() {
         if (instance == null) {
             instance = new MyClock();
@@ -26,9 +16,10 @@ public class MyClock implements Runnable {
         return instance;
     }
 
+    //method redirects print events to output.txt file
     public static synchronized void PrintEvent(String ev) {
         try {
-            FileWriter out = new FileWriter("vm.txt",true);
+            FileWriter out = new FileWriter("output.txt",true);
             out.write(ev);
             out.flush();
             out.close();
@@ -37,12 +28,13 @@ public class MyClock implements Runnable {
     @Override
     //implementation of run method of the clock thread
     public void run() {
-        while (true){
+        boolean finishProg = false;
+        while (!finishProg){
             try {
-                Thread.sleep(200);   //clock periodicity
+                Thread.sleep(50);   //clock periodicity
                 
             } catch (InterruptedException e) { e.getStackTrace(); }
-            time = time + 200 ; //vlock value is incremented every 100 ms
+            time = time + 50 ; //clock value is incremented every 100 ms
         }
     }
 }

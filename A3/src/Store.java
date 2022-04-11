@@ -18,6 +18,10 @@ public class Store extends Command {
 	@Override
     public void setCommands(String command) { this.command = command; }
 
+	@Override
+	public String printType() { return command; }
+
+	//Store command class constructor
 	Store(Variable variable, String command) {
 		this.variable = variable;
 		this.command = command;

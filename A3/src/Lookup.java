@@ -18,9 +18,12 @@ public class Lookup extends Command {
 	@Override
     public void setCommands(String command) { this.command = command; }
 
+	@Override
+	public String printType() { return command; }
+
+	//Lookup commandclass constructor
 	Lookup(Variable variable, String command) {
 		this.variable = variable;
 		this.command = command;
-	}
-	
+	}	
 }

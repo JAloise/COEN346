@@ -1,16 +1,16 @@
 import java.util.ArrayList;
 
 public class Page {
-    private int K;
-    private int timeout;
-    private Variable var;
-    private Integer timeStamp;
-    private Integer hist;
-    private ArrayList<Integer> HistTimeStamp = new ArrayList<Integer>();
-    private int index;
+    private int K;  //used to determine K for in LRU-K algorithm
+    private int timeout;  //time out to be compared with difference of last and hist (timeStampDifference)
+    private Variable var = null;   //Variable in the page
+    private Integer timeStamp;  //update everytime Page is accessed
+    private Integer hist;       //last time access
+    private ArrayList<Integer> HistTimeStamp = new ArrayList<Integer>();    //ArrayList of integers holding last K accesses
+    private int index;  
 
+    //page class constructor
     Page(Variable var, int K, int timeout) {
-
         this.K = K;
         this.var = var;
         this.timeout = timeout;
@@ -31,16 +31,17 @@ public class Page {
         return (timeStamp - HistTimeStamp.get(index-1));
     }
 
+    //method updated Page attributes timestamp and hist whenever page is accessed
     public void TimeStamp() {  
-        if(hist == null) {
+        if(hist == null) {  //if this is the first timestamp update of the page (when method is called in constructor of page)
+            timeStamp = MyClock.getInstance().getTime();    //timestamp set to clock value
+            hist = timeStamp;   //hist = timestamp
+            HistTimeStamp.add(hist);    //add hist to ArrayList
+            index++;    //update element index  
+        } else {            
             timeStamp = MyClock.getInstance().getTime();
-            hist = timeStamp;
-            HistTimeStamp.add(hist);
-            index++;
-        } else {
-            timeStamp = MyClock.getInstance().getTime();
-            if(TimeStampDifference() >= timeout) {
-                HistTimeStamp.add(timeStamp);
+            if(TimeStampDifference() >= timeout) {  //if timestamp >= timeout
+                HistTimeStamp.add(timeStamp);       //update using LRU-K scheme
                 index++;
                 hist = HistTimeStamp.get(index);
                 Integer Lcp = timeStamp - hist;
