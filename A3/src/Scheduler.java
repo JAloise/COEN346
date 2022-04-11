@@ -20,13 +20,14 @@ public class Scheduler extends Thread{
         {
             int cTime = MyClock.getInstance().getTime();
             for(Process p : Processes){
+                
                 //check p Process start time; compare (>=) to cTime (current Time)
                 // check NumOfCores. if > 0, create process thread, and start the thread, also add thread object to CreatedThreads ArrayList
                 // once thread is started; NumofCores--
             	int start_time = p.getStartTime();
-                Thread processThread = new Thread(p);
             	if( start_time >= cTime ) {
             		if( NumOfCores > 0 ) {
+                        Thread processThread = new Thread(p);
             			processThread.start();
                         String ev = "Clock: " + cTime + ", Process " + p.getPID() + ": Started\n"; 
                         MyClock.PrintEvent(ev);
@@ -34,10 +35,6 @@ public class Scheduler extends Thread{
             			NumOfCores--;
             		}
             	}
-
-                if(cTime >= 7000) {
-                    finishProg = true;
-                }
             }  
         }
 

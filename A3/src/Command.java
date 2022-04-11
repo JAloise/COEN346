@@ -1,5 +1,4 @@
 public abstract class Command{
-	
 	protected Variable variable;
 	protected String command;
 	public abstract int getVarValue();

@@ -7,14 +7,21 @@ public class MMU extends Thread{
     private int timeout;
     private int K;
     private int NumOfPages;
-    private ArrayList<Command> commands;
-    private ArrayList<Variable> Pages;
+    private ArrayList<Page> Pages = new ArrayList<Page>();
 
-    MMU(int timeout, int K, int NumOfPages, ArrayList<Command> commands) {
+    MMU(int timeout, int K, int NumOfPages) {
         this.timeout = timeout;
         this.K = K;
         this.NumOfPages = NumOfPages;
-        this.commands = commands;
+    }
+
+    public void writeToFile(String s){
+        try {
+            FileWriter out = new FileWriter("vm.txt",true);
+            out.write(s);
+            out.flush();
+            out.close();
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     public void APICall(Command c) {
@@ -36,89 +43,100 @@ public class MMU extends Thread{
         int id = c.getVarID();
         int val = c.getVarValue();
         
+        boolean updated = false;
         if(Pages.size() <= NumOfPages) 
         {
-            for ( Variable v : Pages) 
+            for ( Page p : Pages) 
             {
-                if(id == v.getID()) {
-                    v.setValue(val);
-                }
-                else {
-                    Pages.add(new Variable(id, val));
+                if(id == p.getVar().getID()) {
+                    p.getVar().setValue(val);
+                    p.TimeStamp();
+                    updated = true;
                 }
             }
+            if(!updated){
+                Page p = new Page(c.variable, K, timeout);
+                Pages.add(p);
+            }
+
         } else {
             String ev = "[('"+id+"','"+val+")]";
-            try {
-                writeToFile(ev);
-            } catch (IOException e) { e.printStackTrace(); }
+            writeToFile(ev);
         }
     }
 
     public void Release(Command c) {
-        int val = c.getVarValue();
         int id = c.getVarID();
         Boolean released = false;
-        for(Variable v: Pages){
-            if(v.getID() == id){
-                Pages.remove(v);
-                released = true;
+        for(Page p: Pages){
+            if(p.getVar().getID() == id){
+                Pages.remove(p);    //remove variable from main memory
+                released = true;    //variable is removed from main memory
+            }
+            if(!released)   //if variable is not released from memory: variable in vm.txt file    
+            //read vm.txt file and remove variable
+            try {
+                Scanner sc = new Scanner(new File("vm.txt"));
+                StringBuffer sb = new StringBuffer();
+                while (sc.hasNextLine()) {
+                    String input = sc.nextLine();
+                    sb.append(input);
+                }
+                String result = sb.toString();
+                result = result.replaceAll("('"+p.getVar().getID()+"','"+p.getVar().getValue()+"')", "");
+                //maybe clear file before overwriting
+                //writeToFile(result);
+            } catch (FileNotFoundException e) { e.printStackTrace(); }
+        }
+    }   
+    
+    public int Lookup(Command c) {
+        int index = -1;
+        int val = c.getVarValue();
+        int id = c.getVarID();
+        boolean pageFault = true;
+        boolean varExists = true;
+        for(Page p : Pages) {
+            if(p.getVar().getID() == id) {
+                pageFault = false;
+                varExists = true;
+                index = p.getVar().getValue();
+                p.TimeStamp();
             }
         }
-        if(!released){
+        //remove content from output txt.file
+        if(pageFault) {
             String input = null;
             Scanner sc;
             try {
-                sc = new Scanner(new File("output.txt"));
+                sc = new Scanner(new File("vm.txt"));
                 StringBuffer sb = new StringBuffer();
                 while (sc.hasNextLine()) {
                     input = sc.nextLine();
                     sb.append(input);
                 }
                 String result = sb.toString();
-                result = result.replaceAll("('"+id+"','"+val+"')", "");
-            } catch (FileNotFoundException e) { e.printStackTrace(); }
+                index = sb.indexOf("('"+id+"','"+val+"')");
+                if(index == -1) {
+                    varExists = false;
+                } else {
+                    result = result.replaceAll("('"+id+"','"+val+"')", " ");
+                }
+            } catch (FileNotFoundException e) { e.printStackTrace(); } 
+        } 
+        ReplacePage();
+        if(!varExists) {
+            index = -1;
         }
+        return index;
     }
 
-    public int Lookup(Command c) {
-        boolean pageFault = false;
-        // for(Variable v : HIST) {
-        //     if(v.getID() == VarId) {
-        //         return v.getValue();
-        //     }
-        //     else { 
-        //         pageFault = true; 
-        //         //remove content from output txt.file
-        //         //swap variable with a variable in the main memory pages
-        //         //swap variable is done using LRU-k
-        //     }
-        // }
-        return -1;
-    }
-
-    public void writeToFile(String s) throws IOException {
-        FileWriter out = new FileWriter("output.txt",true);
-        out.write(s);
-        out.flush();
-        out.close();
-    }
-
-    public void run() {
-
-        for(Command c : commands) {
-            String commandType = c.getCommands();
-            switch(commandType){
-                case "Store" : 
-                    Store(c);
-                    break;
-                case "Lookup" :
-                    Lookup(c);
-                    break;
-                case "Release" :
-                    Release(c);
-                    break;
+    public void ReplacePage() {
+        for(Page p : Pages) {
+            if(p.TimeStampDifference() > timeout){
+                Pages.remove(0);
             }
         }
     }
+
 }

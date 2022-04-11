@@ -4,20 +4,26 @@ import java.util.concurrent.Semaphore;
 public class Process implements Runnable{
     
     private final Semaphore semaphore;
-    private ArrayList<Command> commands;
+    private ArrayList<Command> commands = new ArrayList<Command>();
     private String PID;
     private int StartTime;
     private int Duration;   
     private int AccessIndex = 0;  //must be updated withing critical section
     private MMU mmu;
 
-    Process(String PID, int StartTime, int Duration, ArrayList<Command> commands, MMU mmu) {
+    Process(String PID, int StartTime, int Duration, MMU mmu, ArrayList<Command> commandsList) {
         semaphore = new Semaphore(1);
-        this.commands = commands;
         this.PID = PID;
         this.StartTime = StartTime;
         this.Duration = Duration;
         this.mmu = mmu;
+        AddCommands(commandsList);
+    }
+
+    public void AddCommands(ArrayList<Command> commandsList){
+        for(Command command : commandsList){
+            commands.add(command);
+        }
     }
 
     public String getPID() {
@@ -48,7 +54,7 @@ public class Process implements Runnable{
         Boolean finishProcess = false;
         while(!finishProcess) {
             int cTime = MyClock.getInstance().getTime();
-            int exec_time = cTime - StartTime; 
+            int exec_time = StartTime - cTime ; 
             try {
                 semaphore.acquire();
 
