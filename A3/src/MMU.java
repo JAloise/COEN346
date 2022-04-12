@@ -4,11 +4,11 @@ import java.util.Scanner;
 
 public class MMU extends Thread{
 
-    private int timeout;
-    private int K;
-    private int NumOfPages;
-    private ArrayList<Page> Pages = new ArrayList<Page>();
-    private Command command;
+    private int timeout; // memory access time
+    private int K; // used for the LRU-K algorithm
+    private int NumOfPages; // number of pages 
+    private ArrayList<Page> Pages = new ArrayList<Page>(); // ArrayList that holds all the pages in memory
+    private Command command; // command being/to be executed
 
     MMU(int timeout, int K, int NumOfPages) {
         this.timeout = timeout;
@@ -20,7 +20,7 @@ public class MMU extends Thread{
         command = c;
     }
 
-    public void writeToFile(String s){
+    public void writeToFile(String s){ // method used to write to file
         try {
             FileWriter out = new FileWriter("vm.txt",true);
             out.write(s);
@@ -29,25 +29,29 @@ public class MMU extends Thread{
         } catch (IOException e) { e.printStackTrace(); }
     }
 
-    public void APICall(Command c) {
+    public void APICall(Command c) { // method used to execute the memory management operation
+    	// the getCommands() method returns a string. This string is the name of the command (store, lookup, release)
         String command = c.getCommands();
+        // we use a switch case to perform the correct operation based on the string obtained
         switch(command){
-            case "Store" : 
+            case "Store" : 	// if command = "Store", then perform the store operation
                 Store(c);
                 break;
-            case "Lookup" :
+            case "Lookup" : // if command = "Lookup", then perform the lookup operation
                 Lookup(c);
                 break;
-            case "Release" :
+            case "Release" : // if command = "Release", then perform the release operation
                 Release(c);
                 break;
         }
     }
 
-    public void Store(Command c) {
-        int id = c.getVarID();
-        int val = c.getVarValue();
+    // Store operation implementation
+    public void Store(Command c) {	// receives a command object as an argument
+        int id = c.getVarID(); // get the ID of the variable to be stored
+        int val = c.getVarValue(); // get the value of the variable to be stored
         
+        // check if that variable is already in the memory (Pages ArrayList)
         boolean updated = false;
         if(Pages.size() <= NumOfPages) 
         {
@@ -59,22 +63,23 @@ public class MMU extends Thread{
                     updated = true;
                 }
             }
-            if(!updated){
+            if(!updated){	// if it is not already in the memory, create a new Page with the variable and add it to the ArrayList
                 Page p = new Page(c.variable, K, timeout);
                 Pages.add(p);
             }
 
-        } else {
+        } else {	// write to "vm.txt" file
             String ev = "[('"+id+"','"+val+")]";
             writeToFile(ev);
         }
     }
 
-    public void Release(Command c) {
-        int id = c.getVarID();
+    // Release operation implementation
+    public void Release(Command c) { 	// received a command object as an argument
+        int id = c.getVarID(); // get the ID of the variable to be released
         Boolean released = false;
         for(Page p: Pages){
-            if(p.getVar().getID() == id){
+            if(p.getVar().getID() == id){ // if variable is found in memory
                 Pages.remove(p);    //remove variable from main memory
                 released = true;    //variable is removed from main memory
             }
@@ -143,6 +148,8 @@ public class MMU extends Thread{
             }
         }
     }
+    
+    // run method simply calls the APICall method
     public void run() {
         APICall(command);
     }
